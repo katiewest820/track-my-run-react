@@ -1,0 +1,18 @@
+.mainPageHeader{
+    background-color: black;
+    color: white;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 100px));
+    padding: 10px;
+}
+
+.mainPageHeader p{
+    justify-self: center;
+}
+
+
+@media (min-width: 640px){
+    .mainPageHeader{
+        padding: 20px;
+    }
+}
