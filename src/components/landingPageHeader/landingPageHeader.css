@@ -1,4 +1,4 @@
-.mainPageHeader{
+.landingPageHeader{
     background-color: black;
     color: white;
     display: grid;
@@ -6,7 +6,7 @@
     padding: 10px;
 }
 
-.mainPageHeader a{
+.landingPageHeader a{
     justify-self: center;
     align-self: center;
     text-decoration: none;
@@ -15,7 +15,7 @@
 
 
 @media (min-width: 640px){
-    .mainPageHeader{
+    .landingPageHeader{
         padding: 20px;
     }
 }

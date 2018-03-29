@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../header/header';
-import PinnedToDashboard from '../pinnedToDashboard/pinnedToDashboard';
+import DashboardGraph from '../dashboardGraph/dashboardGraph';
 
 export default class Main extends React.Component{
 
@@ -8,7 +8,7 @@ export default class Main extends React.Component{
     return(
       <div>
         <Header/>
-        <PinnedToDashboard/>
+        <DashboardGraph/>
       </div>
     )
   }
