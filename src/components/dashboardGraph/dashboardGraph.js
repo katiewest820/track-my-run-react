@@ -10,17 +10,27 @@ export default class DashboardGraph extends React.Component{
   constructor(){
     super();
     this.state = {
-
+      month: '',
+      monthlyileage: '',
+      graphData: '',
+      currentlyViewedDate: ''
     }
   }
+
   componentDidMount(){
-    let monthlyMileage = 0;
+    //let monthlyMileage = 0;
     let today = new Date();
+    this.setState({currentlyViewedDate: today})
     let month = moment(today).format('MMMM')
     let MM = moment(today).format('MM');
-    this.setState({month: month});
+    this.getRunsForGraph(MM, month)
+  }
 
-    axios.get(`${API_BASE_URL}run/getAllRuns`).then((response) => {
+  getRunsForGraph(MM, month){
+     let monthlyMileage = 0;
+     this.setState({month: month});
+     let userid = localStorage.getItem('userid');
+    axios.get(`${API_BASE_URL}run/getAllRuns/${userid}`, {headers: {authorization: localStorage.getItem('authToken')}}).then((response) => {
       console.log(response)
       let data = [{name: ' ', mileage: 0, rating: 0}];
       for(let i = 0; i < response.data.data.length; i++) {
@@ -38,10 +48,28 @@ export default class DashboardGraph extends React.Component{
     })
   }
 
+  nextMonth(){
+    let futureMonth = moment(this.state.currentlyViewedDate).add(1, 'M');
+    let futureMonthEnd = moment(futureMonth._d).endOf('month');
+    this.setState({currentlyViewedDate: futureMonthEnd._d})
+    let month = moment(futureMonthEnd._d).format('MMMM')
+    let MM = moment(futureMonthEnd._d).format('MM');
+    this.getRunsForGraph(MM, month)
+  }
 
+  prevMonth(){
+    var pastMonth = moment(this.state.currentlyViewedDate).subtract(1, 'M');
+    var pastMonthEnd = moment(pastMonth._d).endOf('month');
+    console.log(pastMonthEnd)
+    this.setState({currentlyViewedDate: pastMonthEnd._d})
+    let month = moment(pastMonthEnd._d).format('MMMM')
+    let MM = moment(pastMonthEnd._d).format('MM');
+    this.getRunsForGraph(MM, month)
+  }
 
   render(){
-    console.log(this.state.graphData)
+    console.log(localStorage.getItem('authToken'))
+    console.log(localStorage.getItem('userid'))
     return(
       <div>
         <h1>Your {this.state.month} Run History</h1>
@@ -52,6 +80,14 @@ export default class DashboardGraph extends React.Component{
           <YAxis />
           <Tooltip/>
         </LineChart>
+        <div className="arrowDiv">
+          <button onClick={this.prevMonth.bind(this)}>
+            <i className="fas fa-2x fa-arrow-left"></i>
+          </button>
+          <button onClick={this.nextMonth.bind(this)}>
+            <i className="fas fa-2x fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
     )
   }

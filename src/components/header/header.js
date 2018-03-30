@@ -24,7 +24,7 @@ export default class Header extends React.Component{
         <Link to="/home">Home</Link>
         <Link to="/newRun">New Run</Link>
         <Link to="/runLogs">Run Logs</Link>
-        <a onClick={this.logUserOut.bind(this)} >Log Out</a>
+        <a className="logOutLink" onClick={this.logUserOut.bind(this)} >Log Out</a>
         {this.state.redirect && (<Redirect to="/" />)}
       </header>
     )

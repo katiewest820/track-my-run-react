@@ -16,7 +16,8 @@ export default class RunLogs extends React.Component{
   }
 
   componentDidMount(){
-    axios.get(`${API_BASE_URL}run/getAllRuns`).then((response) => {
+    let userid = localStorage.getItem('userid');
+    axios.get(`${API_BASE_URL}run/getAllRuns/${userid}`, {headers: {authorization: localStorage.getItem('authToken')}}).then((response) => {
       console.log(response)
       this.setState({runLogs: response.data.data})
     })
@@ -25,12 +26,15 @@ export default class RunLogs extends React.Component{
   deleteRowData(data){
     console.log(data)
     let runId = data.original.delete;
-    axios.delete(`${API_BASE_URL}run/deleteOneRun/${runId}`).then((response) => {
+    axios.delete(`${API_BASE_URL}run/deleteOneRun/${runId}`, {headers: {authorization: localStorage.getItem('authToken')}}).then((response) => {
       console.log(response)
+      this.componentDidMount()
     }).catch((err) => {
       console.log(err)
     })
   }
+
+
 
 
   render(){

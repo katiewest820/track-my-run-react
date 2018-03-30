@@ -13,6 +13,10 @@
     color: white;
 }
 
+.logOutLink:hover{
+    cursor: pointer;
+}
+
 
 @media (min-width: 640px){
     .mainPageHeader{

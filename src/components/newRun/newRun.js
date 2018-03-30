@@ -2,6 +2,7 @@ import React from 'react';
 import Header from '../header/header';
 import { API_BASE_URL } from '../../config';
 import axios from 'axios';
+import {Redirect} from 'react-router-dom';
 
 export default class NewRun extends React.Component{
   constructor(){
@@ -14,14 +15,16 @@ export default class NewRun extends React.Component{
       incline: '',
       weather: '',
       rating: '',
-      notes: ''
+      notes: '',
+      redirect: false
     }
   }
 
   submitRunToApi(){
-    //TODO user id from local storage
+    let userid = localStorage.getItem('userid');
+    let token = localStorage.getItem('authToken');
     let newRun ={
-      userid: '1234',
+      userid: userid,
       location: this.state.location,
       date: this.state.date,
       mileage: this.state.mileage,
@@ -29,10 +32,12 @@ export default class NewRun extends React.Component{
       incline: this.state.incline,
       weather: this.state.weather,
       rating: this.state.rating,
-      notes: this.state.notes
+      notes: this.state.notes,
+      token: token
     }
     axios.post(`${API_BASE_URL}run/newRun`, newRun).then((response) => {
       console.log(response)
+      this.setState({redirect: true})
     }).catch((err) => {
       console.log(err)
     });
@@ -75,6 +80,7 @@ export default class NewRun extends React.Component{
             <input value={this.state.notes} onChange={e => this.setState({notes: e.target.value})} type="textArea"/>
           </form>
           <button onClick={this.submitRunToApi.bind(this)} >Submit</button>
+          {this.state.redirect && (<Redirect to="home"/>)}
         </div>
       </div>
     )
