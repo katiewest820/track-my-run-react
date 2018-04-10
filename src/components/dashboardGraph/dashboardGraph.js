@@ -2,7 +2,7 @@ import React from 'react';
 import './dashboardGraph.css';
 import { API_BASE_URL } from '../../config';
 import axios from 'axios';
-import { LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
+import { LineChart, BarChart, Bar, CartesianGrid, Legend, Line, XAxis, YAxis, Tooltip } from 'recharts';
 //import Moment from 'react-moment';
 import * as moment from 'moment';
 
@@ -13,7 +13,8 @@ export default class DashboardGraph extends React.Component{
       month: '',
       monthlyileage: '',
       graphData: '',
-      currentlyViewedDate: ''
+      currentlyViewedDate: '',
+      chartType: 'line'
     }
   }
 
@@ -67,28 +68,83 @@ export default class DashboardGraph extends React.Component{
     this.getRunsForGraph(MM, month)
   }
 
+  changeChartType(value){
+    this.setState({chartType: value})
+  }
+
+
   render(){
     console.log(localStorage.getItem('authToken'))
     console.log(localStorage.getItem('userid'))
-    return(
-      <div>
-        <h1>Your {this.state.month} Run History</h1>
-        <h3>Total Mileage This Month: {this.state.monthlyMileage}</h3>
-        <LineChart width={600} height={400} data={this.state.graphData}>
-          <Line type="monotone" dataKey="mileage" stroke="#8884d8" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip/>
-        </LineChart>
-        <div className="arrowDiv">
-          <button onClick={this.prevMonth.bind(this)}>
-            <i className="fas fa-2x fa-arrow-left"></i>
-          </button>
-          <button onClick={this.nextMonth.bind(this)}>
-            <i className="fas fa-2x fa-arrow-right"></i>
-          </button>
+    if(this.state.chartType === 'line'){
+      return (
+        <div>
+          <h1>Your {this.state.month} Run History</h1>
+          <h3>Total Mileage This Month: {this.state.monthlyMileage}</h3>
+          <LineChart width={600} height={400} data={this.state.graphData}>
+            <Line type="monotone" dataKey="mileage" stroke="#8884d8" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip/>
+          </LineChart>
+          <div className="arrowDiv">
+            <button onClick={this.prevMonth.bind(this)}>
+              <i className="fas fa-2x fa-arrow-left"></i>
+            </button>
+            <button onClick={this.nextMonth.bind(this)}>
+              <i className="fas fa-2x fa-arrow-right"></i>
+            </button>
+          </div>
+          <div className="chartTypeDiv">
+            <button onClick={this.changeChartType.bind(this, 'bar')}>
+              <i className="fas fa-3x fa-chart-bar"></i>
+            </button>
+            <button onClick={this.changeChartType.bind(this, 'line')}>
+              <i className="fas fa-3x fa-chart-line"></i>
+            </button>
+          </div>
         </div>
-      </div>
-    )
+      )
+    } else if(this.state.chartType === 'bar'){
+      return (
+        <div>
+          <h1>Your {this.state.month} Run History</h1>
+          <h3>Total Mileage This Month: {this.state.monthlyMileage}</h3>
+          <BarChart width={730} height={250} data={this.state.graphData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="mileage" fill="#8884d8" />
+          </BarChart>
+          <div className="arrowDiv">
+            <button onClick={this.prevMonth.bind(this)}>
+              <i className="fas fa-2x fa-arrow-left"></i>
+            </button>
+            <button onClick={this.nextMonth.bind(this)}>
+              <i className="fas fa-2x fa-arrow-right"></i>
+            </button>
+          </div>
+          <div className="chartTypeDiv">
+            <button onClick={this.changeChartType.bind(this, 'bar')}>
+              <i className="fas fa-3x fa-chart-bar"></i>
+            </button>
+            <button onClick={this.changeChartType.bind(this, 'line')}>
+              <i className="fas fa-3x fa-chart-line"></i>
+            </button>
+          </div>
+        </div>
+      )
+    }
+    
+    
+      
+
+        
+       
+
+      
+    
   }
 }
