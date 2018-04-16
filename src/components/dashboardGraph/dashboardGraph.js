@@ -1,5 +1,6 @@
 import React from 'react';
 import './dashboardGraph.css';
+import RunDetails from '../runDetails/runDetails';
 import { API_BASE_URL } from '../../config';
 import axios from 'axios';
 import { LineChart, BarChart, Bar, CartesianGrid, Legend, Line, XAxis, YAxis, Tooltip } from 'recharts';
@@ -14,7 +15,8 @@ export default class DashboardGraph extends React.Component{
       monthlyileage: '',
       graphData: '',
       currentlyViewedDate: '',
-      chartType: 'line'
+      chartType: 'line',
+      clickedRunData: ''
     }
   }
 
@@ -33,13 +35,13 @@ export default class DashboardGraph extends React.Component{
      let userid = localStorage.getItem('userid');
     axios.get(`${API_BASE_URL}run/getAllRuns/${userid}`, {headers: {authorization: localStorage.getItem('authToken')}}).then((response) => {
       console.log(response)
-      let data = [{name: ' ', mileage: 0, rating: 0}];
+      let data = [{name: ' ', mileage: 0, rating: 0, id: ''}];
       for(let i = 0; i < response.data.data.length; i++) {
         let sqlDate = new Date(response.data.data[i].date);
         let now = moment(sqlDate).format('MM/DD/YY');
         if (now.startsWith(MM)) {
           monthlyMileage = monthlyMileage + response.data.data[i].mileage;
-          data.push({name: now, mileage: response.data.data[i].mileage, rating: response.data.data[i].rating})
+          data.push({name: now, mileage: response.data.data[i].mileage, rating: response.data.data[i].rating, id: response.data.data[i].id})
         }
       }
       this.setState({monthlyMileage: monthlyMileage});
@@ -72,6 +74,24 @@ export default class DashboardGraph extends React.Component{
     this.setState({chartType: value})
   }
 
+  loadRunData(data){
+    console.log('hi')
+    console.log(data)
+    console.log(this)
+    console.log(data.payload.id)
+    //this.setState({redirectToRunId: data.payload.id})
+    this.callApiForRunData(data.payload.id)
+  }
+
+  callApiForRunData(runId){
+    axios.get(`${API_BASE_URL}run/getOneRun/${runId}`, {headers: {authorization: localStorage.getItem('authToken')}}).then((runData) => {
+      console.log(runData)
+      this.setState({clickedRunData: runData})
+    }).catch((err) => {
+      console.log(err)
+    })
+  }
+
 
   render(){
     console.log(localStorage.getItem('authToken'))
@@ -81,12 +101,13 @@ export default class DashboardGraph extends React.Component{
         <div>
           <h1>Your {this.state.month} Run History</h1>
           <h3>Total Mileage This Month: {this.state.monthlyMileage}</h3>
-          <LineChart width={600} height={400} data={this.state.graphData}>
+          <LineChart width={700} height={400} data={this.state.graphData}>
             <Line type="monotone" dataKey="mileage" stroke="#8884d8" />
             <XAxis dataKey="name" />
             <YAxis />
-            <Tooltip/>
+            <Tooltip />
           </LineChart>
+
           <div className="arrowDiv">
             <button onClick={this.prevMonth.bind(this)}>
               <i className="fas fa-2x fa-arrow-left"></i>
@@ -103,6 +124,7 @@ export default class DashboardGraph extends React.Component{
               <i className="fas fa-3x fa-chart-line"></i>
             </button>
           </div>
+          <RunDetails runData={this.state.clickedRunData}/>
         </div>
       )
     } else if(this.state.chartType === 'bar'){
@@ -110,13 +132,13 @@ export default class DashboardGraph extends React.Component{
         <div>
           <h1>Your {this.state.month} Run History</h1>
           <h3>Total Mileage This Month: {this.state.monthlyMileage}</h3>
-          <BarChart width={730} height={250} data={this.state.graphData}>
+          <BarChart width={700} height={400} data={this.state.graphData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="mileage" fill="#8884d8" />
+            <Bar dataKey="mileage" fill="#8884d8" value="id" onClick={e => this.loadRunData(e)}/> 
           </BarChart>
           <div className="arrowDiv">
             <button onClick={this.prevMonth.bind(this)}>
@@ -134,6 +156,7 @@ export default class DashboardGraph extends React.Component{
               <i className="fas fa-3x fa-chart-line"></i>
             </button>
           </div>
+          <RunDetails runData={this.state.clickedRunData}/>
         </div>
       )
     }
